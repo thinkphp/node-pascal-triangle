@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pascal's Triangle</title>
+</head>
+<body>
+  <h1>Pascal's Triangle Generator</h1>
+  <form id="triangleForm">
+    <label for="rows">Enter the number of rows:</label>
+    <input type="number" id="rows" name="rows" min="1" required>
+    <button type="submit">Generate</button>
+  </form>
+  <h2>Result:</h2>
+  <pre id="result" style="font-family: monospace;"></pre>
+
+  <script>
+    document.getElementById('triangleForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const rows = document.getElementById('rows').value;
+      const result = document.getElementById('result');
+
+      try {
+        const response = await fetch('/api/pascal', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ rows })
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          result.textContent = `Error: ${errorText}`;
+          return;
+        }
+
+        const triangle = await response.json();
+        result.textContent = triangle.map(row => row.join(' ')).join('\n');
+      } catch (err) {
+        result.textContent = `Error: ${err.message}`;
+      }
+    });
+  </script>
+</body>
+</html>
